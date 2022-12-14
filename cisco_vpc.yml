@@ -1,0 +1,169 @@
+---
+zabbix_export:
+  version: '6.0'
+  date: '2022-12-14T12:17:11Z'
+  groups:
+    -
+      uuid: 57b7ae836ca64446ba2c296389c009b7
+      name: Templates/Modules
+  templates:
+    -
+      uuid: 986ef67e4f3f4a29ba3c703064c77bff
+      template: CISCO-NEXUS-VPC-SNMP
+      name: CISCO-NEXUS-VPC-SNMP
+      description: |
+        Template for monitoring the Virtual Port Channel (VPC) process by SNMP on the Cisco Nexus platform.
+
+        Tested on Cisco Nexus 9000 Series.
+
+        Jørn Ivar Holland
+      groups:
+        -
+          name: Templates/Modules
+      items:
+        -
+          uuid: fdfe6b952fa5493dac774e2f01ab6df3
+          name: 'VPC dual active status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.9.9.807.1.2.1.1.3.1
+          key: cVpcDualActiveDetectionStatus
+          delay: 4m
+          history: 30d
+          description: 'This object indicates the dual active detection status (or split brain) of peer device.'
+          valuemap:
+            name: cVpcDualActiveDetectionStatus
+          tags:
+            -
+              tag: Application
+              value: VPC
+          triggers:
+            -
+              uuid: 075bc17ee67d4945a1f86fb4e162377d
+              expression: last(/CISCO-NEXUS-VPC-SNMP/cVpcDualActiveDetectionStatus)=1
+              name: 'VPC is dual active'
+              priority: HIGH
+              description: 'VPC is dual active (or split brain) - both switches are in VPC primary role.'
+              tags:
+                -
+                  tag: scope
+                  value: availability
+        -
+          uuid: 081719ea87f44d93bb6f36d3139e1b8e
+          name: 'VPC keepalive status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.9.9.807.1.1.2.1.2.1
+          key: cVpcPeerKeepAliveEntry
+          delay: 4m
+          history: 30d
+          description: 'This object indicates VPC peer keep-alive status.'
+          valuemap:
+            name: cVpcPeerKeepAliveEntry
+          tags:
+            -
+              tag: Application
+              value: VPC
+          triggers:
+            -
+              uuid: d20fd5f88d5a4f709adb7eb6aca9b1c1
+              expression: last(/CISCO-NEXUS-VPC-SNMP/cVpcPeerKeepAliveEntry)<>2
+              name: 'VPC peer-keepalive is down'
+              priority: HIGH
+              description: 'VPC Peer-keepalive is not in state alive'
+              tags:
+                -
+                  tag: scope
+                  value: availability
+        -
+          uuid: 50ac5700ad6649c7bfd610b73165160c
+          name: 'VPC role status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.9.9.807.1.2.1.1.2.1
+          key: cVpcRoleEntry
+          delay: 4m
+          history: 30d
+          description: 'This object indicates the VPC role status of the peer device.'
+          valuemap:
+            name: cVpcRoleStatus
+          tags:
+            -
+              tag: Application
+              value: VPC
+          triggers:
+            -
+              uuid: b713349fc4ee4e3e93ec42af2297457b
+              expression: '(last(/CISCO-NEXUS-VPC-SNMP/cVpcRoleEntry,#1)<>last(/CISCO-NEXUS-VPC-SNMP/cVpcRoleEntry,#2))=1'
+              name: 'VPC role status changed'
+              priority: INFO
+              description: 'VPC role status has changed.'
+              tags:
+                -
+                  tag: scope
+                  value: notice
+      tags:
+        -
+          tag: class
+          value: network
+        -
+          tag: target
+          value: cisco
+        -
+          tag: target
+          value: cisco-nexus
+      valuemaps:
+        -
+          uuid: 4335a67fdf4549f59fbc523929250bc4
+          name: cVpcDualActiveDetectionStatus
+          mappings:
+            -
+              value: '1'
+              newvalue: 'true'
+            -
+              value: '2'
+              newvalue: 'false'
+        -
+          uuid: 880de6fa27954f819a21260bb3d676d8
+          name: cVpcPeerKeepAliveEntry
+          mappings:
+            -
+              value: '1'
+              newvalue: disabled
+            -
+              value: '2'
+              newvalue: alive
+            -
+              value: '3'
+              newvalue: peerUnreachable
+            -
+              value: '4'
+              newvalue: aliveButDomainIdDismatch
+            -
+              value: '5'
+              newvalue: suspendedAsISSU
+            -
+              value: '6'
+              newvalue: suspendedAsDestIPUnreachable
+            -
+              value: '7'
+              newvalue: suspendedAsVRFUnusable
+            -
+              value: '8'
+              newvalue: misconfigured
+        -
+          uuid: 24a03a97ef504673a2846377295d4bf1
+          name: cVpcRoleStatus
+          mappings:
+            -
+              value: '1'
+              newvalue: primarySecondary
+            -
+              value: '2'
+              newvalue: primary
+            -
+              value: '3'
+              newvalue: secondaryPrimary
+            -
+              value: '4'
+              newvalue: secondary
+            -
+              value: '5'
+              newvalue: noneEstabished
