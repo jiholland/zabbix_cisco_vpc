@@ -1,18 +1,5 @@
-```YAML
- _________________________________________________
-< Zabbix template for VPC for Cisco Nexus by SNMP >
- -------------------------------------------------
-        \   ^__^
-         \  (oo)\_______
-            (__)\       )\/\
-                ||----w |
-                ||     ||
-```
+## Cisco Nexus VPC by SNMP
 
-To [import](https://www.zabbix.com/documentation/current/en/manual/xml_export_import/templates), do the following:
-- Go to: Configuration → Templates
-- Click on Import to the right
-- Select the import file
-- Click on import
+Zabbix template for monitoring VPC by SNMP.
 
-🧪 Tested on Cisco Nexus 9000 Series.
+The template uses snmp bulk mode which require zabbix version 7.0 or greater.
