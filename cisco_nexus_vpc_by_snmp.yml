@@ -9,10 +9,8 @@ zabbix_export:
       name: 'Cisco Nexus VPC by SNMP'
       description: |
         Template for monitoring the Virtual Port Channel (VPC) process by SNMP on the Cisco Nexus platform.
-        
         Tested on Cisco Nexus 9000 Series.
-        
-        Jørn Ivar Holland
+        Jorn Ivar Holland
       groups:
         - name: Templates/Modules
       items:
@@ -63,7 +61,7 @@ zabbix_export:
               trigger_prototypes:
                 - uuid: 486d072db8544ebb9adbf109bc597b47
                   expression: 'last(/Cisco Nexus VPC by SNMP/vpc.dualactive.status[cVpcDualActiveDetectionStatus.{#SNMPINDEX}])=1'
-                  name: 'VPC is dual active'
+                  name: 'Cisco Nexus: VPC is dual active'
                   priority: HIGH
                   description: 'VPC is dual active (or split brain) - both switches are in VPC primary role.'
                   tags:
@@ -91,7 +89,7 @@ zabbix_export:
               trigger_prototypes:
                 - uuid: 5e2d0c6efb89467db79537d2ad5570cf
                   expression: 'last(/Cisco Nexus VPC by SNMP/vpc.keepalive.status[cVpcPeerKeepAliveEntry.{#SNMPINDEX}])<>2'
-                  name: 'VPC peer-keepalive is down'
+                  name: 'Cisco Nexus: VPC peer-keepalive is down'
                   priority: HIGH
                   description: 'VPC Peer-keepalive is not in state alive.'
                   tags:
@@ -119,7 +117,7 @@ zabbix_export:
               trigger_prototypes:
                 - uuid: ff08f1fbc76e47cfa8a43c9bab48c74c
                   expression: '(last(/Cisco Nexus VPC by SNMP/vpc.role.status[cVpcRoleEntry.{#SNMPINDEX}],#1)<>last(/Cisco Nexus VPC by SNMP/vpc.role.status[cVpcRoleEntry.{#SNMPINDEX}],#2))=1'
-                  name: 'VPC role status changed'
+                  name: 'Cisco Nexus: VPC role status changed'
                   priority: INFO
                   description: 'VPC role status has changed.'
                   tags:
