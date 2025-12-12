@@ -2,7 +2,7 @@ zabbix_export:
   version: '7.0'
   template_groups:
     - uuid: 57b7ae836ca64446ba2c296389c009b7
-      name: Templates/Modules
+      name: 'Templates/Network modules'
   templates:
     - uuid: b4debaf744b34ac89969c9af4c9d8180
       template: 'Cisco Nexus VPC by SNMP'
@@ -12,7 +12,7 @@ zabbix_export:
         Tested on Cisco Nexus 9000 Series.
         Jorn Ivar Holland
       groups:
-        - name: Templates/Modules
+        - name: 'Templates/Network modules'
       items:
         - uuid: 9b1e6d9fc4b34715972dd54dfd5babe8
           name: 'SNMP walk VPC'
@@ -29,8 +29,8 @@ zabbix_export:
             1.3.6.1.4.1.9.9.807.1.2.1.1.3 = vpc dual active (split brain) status
             1.3.6.1.4.1.9.9.807.1.2.1.1.6 = vpc local system operational mac address
           tags:
-            - tag: protocol
-              value: vpc
+            - tag: component
+              value: raw
       discovery_rules:
         - uuid: 991d890be8d547098c0c034f36f4017b
           name: 'VPC discovery'
@@ -44,6 +44,7 @@ zabbix_export:
               type: DEPENDENT
               key: 'vpc.dualactive.status[cVpcDualActiveDetectionStatus.{#SNMPINDEX}]'
               delay: '0'
+              history: 15d
               trends: '0'
               description: 'This object indicates the dual active (split brain) detection status of peer device.'
               valuemap:
@@ -56,8 +57,8 @@ zabbix_export:
               master_item:
                 key: vpc.walk
               tags:
-                - tag: protocol
-                  value: vpc
+                - tag: component
+                  value: cluster
               trigger_prototypes:
                 - uuid: 486d072db8544ebb9adbf109bc597b47
                   expression: 'last(/Cisco Nexus VPC by SNMP/vpc.dualactive.status[cVpcDualActiveDetectionStatus.{#SNMPINDEX}])=1'
@@ -66,12 +67,13 @@ zabbix_export:
                   description: 'VPC is dual active (or split brain) - both switches are in VPC primary role.'
                   tags:
                     - tag: scope
-                      value: availability
+                      value: notice
             - uuid: 28c181fbfe024e28939b508e3b0e9e81
               name: 'VPC keepalive status'
               type: DEPENDENT
               key: 'vpc.keepalive.status[cVpcPeerKeepAliveEntry.{#SNMPINDEX}]'
               delay: '0'
+              history: 15d
               trends: '0'
               description: 'This object indicates VPC peer keep-alive status.'
               valuemap:
@@ -84,8 +86,8 @@ zabbix_export:
               master_item:
                 key: vpc.walk
               tags:
-                - tag: protocol
-                  value: vpc
+                - tag: component
+                  value: cluster
               trigger_prototypes:
                 - uuid: 5e2d0c6efb89467db79537d2ad5570cf
                   expression: 'last(/Cisco Nexus VPC by SNMP/vpc.keepalive.status[cVpcPeerKeepAliveEntry.{#SNMPINDEX}])<>2'
@@ -100,6 +102,7 @@ zabbix_export:
               type: DEPENDENT
               key: 'vpc.role.status[cVpcRoleEntry.{#SNMPINDEX}]'
               delay: '0'
+              history: 15d
               trends: '0'
               description: 'This object indicates the VPC role status of the peer device.'
               valuemap:
@@ -112,14 +115,15 @@ zabbix_export:
               master_item:
                 key: vpc.walk
               tags:
-                - tag: protocol
-                  value: vpc
+                - tag: component
+                  value: cluster
               trigger_prototypes:
                 - uuid: ff08f1fbc76e47cfa8a43c9bab48c74c
                   expression: '(last(/Cisco Nexus VPC by SNMP/vpc.role.status[cVpcRoleEntry.{#SNMPINDEX}],#1)<>last(/Cisco Nexus VPC by SNMP/vpc.role.status[cVpcRoleEntry.{#SNMPINDEX}],#2))=1'
                   name: 'Cisco Nexus: VPC role status changed'
                   priority: INFO
-                  description: 'VPC role status has changed.'
+                  description: 'VPC role status has changed. Acknowledge to close the problem manually.'
+                  manual_close: 'YES'
                   tags:
                     - tag: scope
                       value: notice
@@ -141,6 +145,8 @@ zabbix_export:
           value: cisco
         - tag: target
           value: cisco-nexus
+        - tag: target
+          value: vpc
       valuemaps:
         - uuid: 212ac9b591df43af978fd74b9f6ef910
           name: cVpcDualActiveDetectionStatus
