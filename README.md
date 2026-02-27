@@ -6,8 +6,4 @@ This [template](https://www.zabbix.com/documentation/current/en/manual/xml_expor
 - vpc role status
 - vpc dual active (split brain) status
 
-The template uses
-[snmp bulk requests](https://www.zabbix.com/documentation/current/en/manual/config/items/itemtypes/snmp?hl=SNMP%2Cdiscovery#native-snmp-bulk-requests)
-for discovery which require Zabbix version 6.4 or greater.
-
 ☕️ Jørn Ivar
