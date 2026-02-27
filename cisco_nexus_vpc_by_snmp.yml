@@ -128,7 +128,7 @@ zabbix_export:
                   value: cluster
               trigger_prototypes:
                 - uuid: ff08f1fbc76e47cfa8a43c9bab48c74c
-                  expression: '(last(/Cisco Nexus VPC by SNMP/vpc.role.status[cVpcRoleEntry.{#SNMPINDEX}],#1)<>last(/Cisco Nexus VPC by SNMP/vpc.role.status[cVpcRoleEntry.{#SNMPINDEX}],#2))=1'
+                  expression: 'change(/Cisco Nexus VPC by SNMP/vpc.role.status[cVpcRoleEntry.{#SNMPINDEX}]) and length(last(/Cisco Nexus VPC by SNMP/vpc.role.status[cVpcRoleEntry.{#SNMPINDEX}]))>0'
                   name: 'Cisco Nexus: VPC role status changed'
                   priority: INFO
                   description: 'VPC role status has changed. Acknowledge to close the problem manually.'
