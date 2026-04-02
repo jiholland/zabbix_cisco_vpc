@@ -8,7 +8,7 @@ zabbix_export:
       template: 'Cisco Nexus VPC by SNMP'
       name: 'Cisco Nexus VPC by SNMP'
       description: |
-        Template for monitoring the Virtual Port Channel (VPC) process by SNMP on the Cisco Nexus platform. Tested on Cisco Nexus 9000 Series.
+        Template for monitoring the Virtual Port Channel (vPC) process by SNMP on the Cisco Nexus platform. Tested on Cisco Nexus 9000 Series.
         
         Author: Jorn Ivar Holland
       groups:
@@ -18,7 +18,7 @@ zabbix_export:
           name: 'SNMP walk vPC'
           type: SNMP_AGENT
           snmp_oid: 'walk[1.3.6.1.4.1.9.9.807.1.1.2.1.2,1.3.6.1.4.1.9.9.807.1.2.1.1.2,1.3.6.1.4.1.9.9.807.1.2.1.1.3,1.3.6.1.4.1.9.9.807.1.2.1.1.6]'
-          key: vpc.walk
+          key: cluster.vpc.walk
           history: '0'
           value_type: TEXT
           trends: '0'
@@ -35,19 +35,19 @@ zabbix_export:
         - uuid: 991d890be8d547098c0c034f36f4017b
           name: 'VPC discovery'
           type: DEPENDENT
-          key: vpc.discovery
+          key: cluster.vpc.discovery
           delay: '0'
-          description: 'Discovery VPC.'
+          description: 'Discovery vPC cluster.'
           item_prototypes:
             - uuid: 6597c15b4bd845e3a56ca7dc7d4f4398
               name: 'vPC dual active status'
               type: DEPENDENT
-              key: 'vpc.dualactive.status[cVpcDualActiveDetectionStatus.{#SNMPINDEX}]'
+              key: 'cluster.vpc.dualactive[cVpcDualActiveDetectionStatus.{#SNMPINDEX}]'
               delay: '0'
               trends: '0'
               description: 'This object indicates the dual active (split brain) detection status of peer device.'
               valuemap:
-                name: cVpcDualActiveDetectionStatus
+                name: 'vPC dual active status'
               preprocessing:
                 - type: SNMP_WALK_VALUE
                   parameters:
@@ -57,13 +57,13 @@ zabbix_export:
                   parameters:
                     - 1h
               master_item:
-                key: vpc.walk
+                key: cluster.vpc.walk
               tags:
                 - tag: component
                   value: cluster
               trigger_prototypes:
                 - uuid: 486d072db8544ebb9adbf109bc597b47
-                  expression: 'last(/Cisco Nexus VPC by SNMP/vpc.dualactive.status[cVpcDualActiveDetectionStatus.{#SNMPINDEX}])=1'
+                  expression: 'last(/Cisco Nexus VPC by SNMP/cluster.vpc.dualactive[cVpcDualActiveDetectionStatus.{#SNMPINDEX}])=1'
                   name: 'Cisco Nexus: vPC is dual active'
                   priority: HIGH
                   description: 'vPC is dual active (or split brain) - both switches are in VPC primary role.'
@@ -73,12 +73,12 @@ zabbix_export:
             - uuid: 28c181fbfe024e28939b508e3b0e9e81
               name: 'vPC keepalive status'
               type: DEPENDENT
-              key: 'vpc.keepalive.status[cVpcPeerKeepAliveEntry.{#SNMPINDEX}]'
+              key: 'cluster.vpc.keepalive[cVpcPeerKeepAliveEntry.{#SNMPINDEX}]'
               delay: '0'
               trends: '0'
               description: 'This object indicates vPC peer keep-alive status.'
               valuemap:
-                name: cVpcPeerKeepAliveEntry
+                name: 'vPC peer keepalive status'
               preprocessing:
                 - type: SNMP_WALK_VALUE
                   parameters:
@@ -88,13 +88,13 @@ zabbix_export:
                   parameters:
                     - 1h
               master_item:
-                key: vpc.walk
+                key: cluster.vpc.walk
               tags:
                 - tag: component
                   value: cluster
               trigger_prototypes:
                 - uuid: 5e2d0c6efb89467db79537d2ad5570cf
-                  expression: 'last(/Cisco Nexus VPC by SNMP/vpc.keepalive.status[cVpcPeerKeepAliveEntry.{#SNMPINDEX}])<>2'
+                  expression: 'last(/Cisco Nexus VPC by SNMP/cluster.vpc.keepalive[cVpcPeerKeepAliveEntry.{#SNMPINDEX}])<>2'
                   name: 'Cisco Nexus: vPC peer-keepalive is not alive'
                   opdata: 'Current state: {ITEM.LASTVALUE}'
                   priority: HIGH
@@ -105,12 +105,12 @@ zabbix_export:
             - uuid: a5481d6a1053405daecffd4c1b295a2b
               name: 'vPC role status'
               type: DEPENDENT
-              key: 'vpc.role.status[cVpcRoleEntry.{#SNMPINDEX}]'
+              key: 'cluster.vpc.role[cVpcRoleEntry.{#SNMPINDEX}]'
               delay: '0'
               trends: '0'
               description: 'This object indicates the vPC role status of the peer device.'
               valuemap:
-                name: cVpcRoleStatus
+                name: 'vPC role status'
               preprocessing:
                 - type: SNMP_WALK_VALUE
                   parameters:
@@ -120,14 +120,14 @@ zabbix_export:
                   parameters:
                     - 1h
               master_item:
-                key: vpc.walk
+                key: cluster.vpc.walk
               tags:
                 - tag: component
                   value: cluster
               trigger_prototypes:
                 - uuid: ff08f1fbc76e47cfa8a43c9bab48c74c
-                  expression: 'change(/Cisco Nexus VPC by SNMP/vpc.role.status[cVpcRoleEntry.{#SNMPINDEX}])'
-                  name: 'Cisco Nexus: vPC role status changed'
+                  expression: 'change(/Cisco Nexus VPC by SNMP/cluster.vpc.role[cVpcRoleEntry.{#SNMPINDEX}])'
+                  name: 'Cisco Nexus: vPC role changed status'
                   priority: INFO
                   description: 'vPC role status has changed. Acknowledge to close the problem manually.'
                   manual_close: 'YES'
@@ -135,7 +135,7 @@ zabbix_export:
                     - tag: scope
                       value: notice
           master_item:
-            key: vpc.walk
+            key: cluster.vpc.walk
           preprocessing:
             - type: DISCARD_UNCHANGED_HEARTBEAT
               parameters:
@@ -156,14 +156,14 @@ zabbix_export:
           value: vpc
       valuemaps:
         - uuid: 212ac9b591df43af978fd74b9f6ef910
-          name: cVpcDualActiveDetectionStatus
+          name: 'vPC dual active status'
           mappings:
             - value: '1'
               newvalue: 'true'
             - value: '2'
               newvalue: 'false'
         - uuid: d7eb7343d9824755876e180de63c2c34
-          name: cVpcPeerKeepAliveEntry
+          name: 'vPC peer keepalive status'
           mappings:
             - value: '1'
               newvalue: disabled
@@ -182,7 +182,7 @@ zabbix_export:
             - value: '8'
               newvalue: misconfigured
         - uuid: 3f6fa67d553441cdae75b1e346eca9bc
-          name: cVpcRoleStatus
+          name: 'vPC role status'
           mappings:
             - value: '1'
               newvalue: primarySecondary
